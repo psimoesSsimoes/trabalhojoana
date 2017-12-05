@@ -3,17 +3,11 @@
 class Card:
     def __init__(self,value,suit):
         self.value = value
-        self.suit = u'\u2660\u2661\u2662\u2663'[suit-1]   # 1,2,3,4 = ♥♦♣♠
+        self.line = line
 
-    def fancy(self):
-        print("")
-        print("┌───────┐")
-        print("| {:<2}    |".format(self.value))
-        print("|       |")
-        print("|   "+self.suit + "   |")
-        print("|       |")
-        print("|    {:>2} |".format(self.value))
-        print("└───────┘")
+        
+    def normal(self):
+        return "("+self.line.replace(" ",",")+")"
 
     def value(self):
         return self.value

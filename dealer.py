@@ -1,5 +1,5 @@
 #!python3.6
-
+import sys
 
 class Dealer:
     def __init__(self,hand):
@@ -33,9 +33,11 @@ class Dealer:
             return False
         else:
             return True
+    
+    def showhand(self):
+        for i in self.hand:
+            h+=i.normal()+" "
+        return h
 
-    def showgame(self):
-        print("DEALER's HAND:")
-        for i in range(0, len(self.hand)-1):
-            i.fancy()
-
+   def showhandhidden(self):
+       return "Dealer: "+self.hand[0].normal+" (?,?)"

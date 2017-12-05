@@ -7,36 +7,35 @@ from player import Player
 from dealer import Dealer
 
 class Game:
-    
-    def __init__(self,player):
+    #global variables
+    exit=""
+    lost=False
+    which_deck=1
+
+    def __init__(self,player,dealer):
         self.you=player
-        self.dealer=Dealer()
+        self.dealer=dealer
 
     def play(self):
-        play='y'
-        while you.can_play() and play=='y':
-            lost=False
-            try:
-                bet=float(raw_input("how much you want to bet?"))
-        
-                if bet > you.balance():
-                    bet=10.0 
-            except ValueError:
-            bet=10.0
-            #player and dealer are just an array of Cards
-            print("Bet of "+str(bet))
+        while you.can_play() and exit =='quit':
+            
             deck=Deck(ReadDeck(str(which_deck)))
+            
+            print("=== Vamos começar ===")
+            you.pprint()
+
             #gives two cards
             for i in range(0,2):
-                you.append(deck.popfromdeck())
-                dealer.append(deck.popfromdeck())
+                self.you.append(deck.popfromdeck())
+                self.dealer.append(deck.popfromdeck())
              
-            dealer.showgame()
-            print("----------------------------------")
-            you.showgame()
-
-            if you.handpoints()!=21:
+            print("*** Ronda "+which_deck+" ***")
+            print(self.dealer.showhandhidden()) 
+            print("Jogador: "+self.you.showhand+" - "+self.you.handpoints()+" -") 
+            print()
+            if self.you.handpoints()!=21:
                 while true:
+                    print(self.you.whoplays())
                     answer = input("HIT OR STAND?")
                     if answer.lower()=="hit":
                         you.append(deck.popfromdeck())
@@ -60,8 +59,8 @@ class Game:
                         break
 
             else:
-                print("What a lucky hand! Blackjack you bastard!")
-                print("Dealer's Turn!")
+                print(self.you.blackjack())
+                print()
             
             if !lost:
                 if dealer.handpoints()!=21:

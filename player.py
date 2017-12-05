@@ -2,12 +2,13 @@
 
 
 class Player:
-    def __init__(self,name,amount,hand):
+    def __init__(self,name,amount,bet,hand):
         self.name = name
         self.amount = amount
+        self.bet=bet
         self.hand=hand
     
-    #no verification is being made for negative balance
+    #no verification is being made for when balance reaches negative state.
     def update_balance(self,x):
         self.amount+=x
     #if balance >=10  player can play
@@ -45,11 +46,23 @@ class Player:
         
         return points
     #show hand 
-    def showgame(self):
-        print("YOUR HAND:")
+    
+
+    def showhand(self):
         for i in self.hand:
-            i.fancy()
+            h+=i.normal()+" "
+        return h
 
+    def betvalue(self):
+        return self.bet
 
-            
-
+    def pprint(self):
+        print("Jogador: "+str(name))
+        print("Saldo Inicial: "+str(amount))
+        print("Valor da aposta: "+str(bet))
+    
+    def whoplays(self):
+        return "* Joga "+self.name+" *"
+    
+    def blackjack(self):
+        return self.name+" fez BLACKJACK!"

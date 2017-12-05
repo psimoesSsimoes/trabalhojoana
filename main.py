@@ -4,44 +4,32 @@
 from card import Card
 from deck import Deck
 from player import Player
+from game import Game
 
+name=input("Nome do jogador?")
 
-
-
-
-#two arrays of cards, p of you, d of dealer
-def showgame(p,d):
-    print("YOUR HAND:")
-    for i in p:
-        i.fancy()
-    
-    print("DEALER'S HAND:")
-    d[0].fancy() 
-
-
-
-
-
-
-name = raw_input("Name?")
-
-#https://docs.python.org/2/tutorial/errors.html
 try:
-    amount= float(raw_input("Amount?"))
+    amount= float(raw_input("Montante inicial (100)?"))
 except ValueError:
     amount=100.0
 
-print("Welcome to the wonderfull world of blackjack "+name+"!")
-print("Your initial amount is "+str(amount))
-print("Have a great game!")
+try:
+    bet=float(input("Valor da aposta(10)?"))
+except ValueError:
+    bet=10
 
-you=Player(name,amount)
+if bet > amount:
+    #wtf happens? ask the teacher
 
-#a flag to know when to exit the game
-exit=0
-which_deck=1
+rule=input("Qual a regra do casino (s17 ou h17)?")
 
+p=Player(name,amount,bet,[])
 
-# for i in range(0, 10):
-#     y=x.popfromdeck()
-#     y.fancy()
+d=Dealer([])
+
+g=Game(p,d)
+
+g.play()
+
+g.showstats()
+
