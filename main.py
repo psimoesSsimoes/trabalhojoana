@@ -23,7 +23,7 @@ def handpoints(hand):
 def stats(player_name,rounds,inicial_amount,final_amount,wins,losses,ties,nblack):
     print
     print("=== Algumas estatísticas ===")
-    print(str(player_name)+" jogou "+str(rounds)+ "rondas.")
+    print(str(player_name)+" jogou "+str(rounds)+ " rondas.")
     print("Entrou no jogo com "+str(inicial_amount)+ " e agora tem "+str(final_amount))
     print("número de vitórias: "+str(wins))
     print("número de derrotas: "+str(losses))
@@ -51,9 +51,9 @@ def bust(points):
 
 #decision dealer
 def ask_card(points,mode):
-    if points < 17 and mode="s17":
+    if points < 17 and mode=="s17":
         return True
-    elif points >=17 and mode="s17":
+    elif points >=17 and mode=="s17":
         return False 
     elif points <=17:
         return True 
@@ -88,6 +88,10 @@ player.insert(2,bet)
 
 rule=raw_input("Qual a regra do casino (s17 ou h17)?")
 
+if rule.lower()!="h17":
+    rule="s17"
+else:
+    rule=rule.lower()
 
 print
 print("=== Vamos começar ===")
@@ -103,6 +107,10 @@ dealerhand=[]
 dealer_points=0
 player_points=0
 inicial_amount=player[1]
+wins=0
+losses=0
+ties=0
+nblack=0
 seventeen=False
 option=""
 
@@ -121,9 +129,7 @@ while safe_word.lower()!="quit" and amount >= bet:
     print("Jogador:("+playerhand[0].replace(" ",",")+") ("+playerhand[1].replace(" ",",")+")" +" - "+str(player_points)+" -")
     print
 
-    if dealer_points == 17 and option=="h17":
-        seventeen=True
-
+    
     print("* Joga "+str(player[0])+" *")
     
     if blackjack(player_points) and  not blackjack(dealer_points):
@@ -131,6 +137,10 @@ while safe_word.lower()!="quit" and amount >= bet:
         print(str(player[0]) +" fez BLACKJACK!")
          
         player[1]+= 3 * player[2]/2
+        wins+=1
+        nblackjack+=1
+        
+
 
     elif blackjack(player_points) and blackjack(dealer_points):
         
@@ -139,6 +149,8 @@ while safe_word.lower()!="quit" and amount >= bet:
         print("Mao dealer:")
         print(show_deck(dealerhand)+" -"+str(dealer_points)+" -") 
         print("Dealer fez BLACKJACK!")
+        print
+        ties+=1
 
     else:
 
@@ -160,6 +172,7 @@ while safe_word.lower()!="quit" and amount >= bet:
                     print_ronda(-player[2],player[1],"derrota com ganho")
                     
                     option="stand"
+                    losses+=1
 
                     safe_word=raw_input("Mais uma ronda (QUIT para terminar)?")
                     print
@@ -180,15 +193,16 @@ while safe_word.lower()!="quit" and amount >= bet:
                 
                 print("Dealer fez BLACKJACK!")
             
-                player[1]-=player[2] 
+                player[1]-=player[2]
+                losses+=1
                 
-            elif not ask_card(dealer_points,option):
+            elif not ask_card(dealer_points,rule):
                 print("Dealer decidiu STAND")
 
             else:
                 
                 #enquanto o dealer puder, pede cartas
-                while ask_card(dealer_points,option):
+                while ask_card(dealer_points,rule):
                     
                     print("Dealer decidiu HIT")
                     
@@ -203,12 +217,20 @@ while safe_word.lower()!="quit" and amount >= bet:
                         print(show_deck(dealerhand)+" -"+str(dealer_points)+" -") 
                         
                         print("BUST com "+str(dealer_points)+" pontos")
+                        wins+=1
+                        player[1]+=player[2]
+
+                        print_ronda(player[2],player[1],"vitória com ganho")
+
+                        safe_word=raw_input("Mais uma ronda (QUIT para terminar)?")
+                        print
+
                     else:
                         print("Mao dealer:")
                         
                         print(show_deck(dealerhand)+" -"+str(dealer_points)+" -") 
 
-                        if not ask_card(dealer_points,option):
+                        if not ask_card(dealer_points,rule):
                             print("Dealer decidiu STAND")
                 
     #decisão de quem ganha
@@ -216,6 +238,7 @@ while safe_word.lower()!="quit" and amount >= bet:
         
         if blackjack(player_points) and blackjack(dealer_points):
             print_ronda(0,player[1],"empate com ganho")
+            ties+=1
             safe_word=raw_input("Mais uma ronda (QUIT para terminar)?")
             print
 
@@ -223,14 +246,22 @@ while safe_word.lower()!="quit" and amount >= bet:
         elif blackjack(player_points):
             
             print_ronda(3*player[2]/2,player[1],"vitória Blackjack")
+            wins+=1
+            nblackjack+=1
+            safe_word=raw_input("Mais uma ronda (QUIT para terminar)?")
             print 
         
         elif blackjack(dealer_points):
             print_ronda(-player[2],player[1],"derrota com ganho")
+            losses+=1
+            safe_word=raw_input("Mais uma ronda (QUIT para terminar)?")
+            print 
+
         elif dealer_points > player_points:
             player[1]-=player[2]
             
             print_ronda(-player[2],player[1],"derrota com ganho")
+            losses+=1
             safe_word=raw_input("Mais uma ronda (QUIT para terminar)?")
             print
 
@@ -239,18 +270,18 @@ while safe_word.lower()!="quit" and amount >= bet:
         elif dealer_points==player_points:
                     
             print_ronda(0,player[1],"empate com ganho")
+            ties+=1
             safe_word=raw_input("Mais uma ronda (QUIT para terminar)?")
             print
 
         else:
             player[1]+=player[2]
             print_ronda(player[2],player[1],"vitória com ganho")
-                    
+            wins+=1        
             safe_word=raw_input("Mais uma ronda (QUIT para terminar)?")
             print
               
     #voltar ao estado inicial
-    print("atum")
     playerhand=[]
     
     dealerhand=[]
@@ -264,3 +295,4 @@ while safe_word.lower()!="quit" and amount >= bet:
     ronda+=1
 
 
+stats(player[0],ronda-1,inicial_amount,player[1],wins,losses,ties,nblack)
