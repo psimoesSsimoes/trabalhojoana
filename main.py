@@ -20,6 +20,23 @@ def handpoints(hand):
         
         return points
 
+def stats(player_name,rounds,inicial_amount,final_amount,wins,losses,ties,nblack):
+    print
+    print("=== Algumas estatísticas ===")
+    print(str(player_name)+" jogou "+str(rounds)+ "rondas.")
+    print("Entrou no jogo com "+str(inicial_amount)+ " e agora tem "+str(final_amount))
+    print("número de vitórias: "+str(wins))
+    print("número de derrotas: "+str(losses))
+    print("número de empates: "+str(ties))
+    print("vitórias blackjack: "+str(nblack))
+
+#se tem às,então retorna false. A verificação dos 17 pontos é feita em baixo
+def soft(hand):
+    for i in hand:
+        if i.split(" ")[0]=='A':
+            return False
+    return True
+
 def show_deck(hand):
     s=""
     for i in hand:
@@ -33,9 +50,13 @@ def bust(points):
     return points > 21
 
 #decision dealer
-def ask_card(points):
-    if points < 17:
+def ask_card(points,mode):
+    if points < 17 and mode="s17":
         return True
+    elif points >=17 and mode="s17":
+        return False 
+    elif points <=17:
+        return True 
     else: 
         return False
 
@@ -81,6 +102,8 @@ playerhand=[]
 dealerhand=[]
 dealer_points=0
 player_points=0
+inicial_amount=player[1]
+seventeen=False
 option=""
 
 while safe_word.lower()!="quit" and amount >= bet:
@@ -97,7 +120,9 @@ while safe_word.lower()!="quit" and amount >= bet:
     player_points+=handpoints(playerhand)
     print("Jogador:("+playerhand[0].replace(" ",",")+") ("+playerhand[1].replace(" ",",")+")" +" - "+str(player_points)+" -")
     print
-        
+
+    if dealer_points == 17 and option=="h17":
+        seventeen=True
 
     print("* Joga "+str(player[0])+" *")
     
@@ -107,8 +132,14 @@ while safe_word.lower()!="quit" and amount >= bet:
          
         player[1]+= 3 * player[2]/2
 
-
+    elif blackjack(player_points) and blackjack(dealer_points):
         
+        print(str(player[0]) +" fez BLACKJACK!")
+        print("* Joga o dealer *") 
+        print("Mao dealer:")
+        print(show_deck(dealerhand)+" -"+str(dealer_points)+" -") 
+        print("Dealer fez BLACKJACK!")
+
     else:
 
         while option.lower()!="stand":
@@ -122,7 +153,7 @@ while safe_word.lower()!="quit" and amount >= bet:
                 player_points=handpoints(playerhand)
                 
                 if bust(player_points):
-                    print("BUST com "+str(player_points)+"pontos")
+                    print("BUST com "+str(player_points)+" pontos")
                     
                     player[1]-=player[2]
                 
@@ -149,57 +180,70 @@ while safe_word.lower()!="quit" and amount >= bet:
                 
                 print("Dealer fez BLACKJACK!")
             
-                player[1]-=player[2]
-            
+                player[1]-=player[2] 
                 
-            elif not ask_card(dealer_points):
+            elif not ask_card(dealer_points,option):
                 print("Dealer decidiu STAND")
 
             else:
                 
                 #enquanto o dealer puder, pede cartas
-                while ask_card(dealer_points):
+                while ask_card(dealer_points,option):
                     
                     print("Dealer decidiu HIT")
                     
                     dealerhand.append(deck.pop(0))
-
-                    # se o dealer rebenta
-                    dealer_points=handpoints(dealer_hand)
                     
+                    dealer_points=handpoints(dealerhand)
+
                     if bust(dealer_points):
                         
                         print("Mao dealer:")
                         
-                        print(show_deck(dealer_hand)+" -"+str(dealer_points)+" -") 
+                        print(show_deck(dealerhand)+" -"+str(dealer_points)+" -") 
                         
                         print("BUST com "+str(dealer_points)+" pontos")
                     else:
                         print("Mao dealer:")
                         
-                        print(show_deck(dealer_hand)+" -"+str(dealer_points)+" -") 
+                        print(show_deck(dealerhand)+" -"+str(dealer_points)+" -") 
 
-                        if not ask_card(dealer_points):
+                        if not ask_card(dealer_points,option):
                             print("Dealer decidiu STAND")
                 
     #decisão de quem ganha
     if not bust(dealer_points) and not bust(player_points):
-        if blackjack(player_points):
+        
+        if blackjack(player_points) and blackjack(dealer_points):
+            print_ronda(0,player[1],"empate com ganho")
+            safe_word=raw_input("Mais uma ronda (QUIT para terminar)?")
+            print
+
+        
+        elif blackjack(player_points):
             
             print_ronda(3*player[2]/2,player[1],"vitória Blackjack")
             print 
+        
+        elif blackjack(dealer_points):
+            print_ronda(-player[2],player[1],"derrota com ganho")
         elif dealer_points > player_points:
             player[1]-=player[2]
             
             print_ronda(-player[2],player[1],"derrota com ganho")
-            print         
+            safe_word=raw_input("Mais uma ronda (QUIT para terminar)?")
+            print
+
 
                 
         elif dealer_points==player_points:
                     
             print_ronda(0,player[1],"empate com ganho")
-            print 
+            safe_word=raw_input("Mais uma ronda (QUIT para terminar)?")
+            print
+
         else:
+            player[1]+=player[2]
             print_ronda(player[2],player[1],"vitória com ganho")
                     
             safe_word=raw_input("Mais uma ronda (QUIT para terminar)?")
@@ -219,17 +263,4 @@ while safe_word.lower()!="quit" and amount >= bet:
     #próxima ronda
     ronda+=1
 
-# baralho = ReadDeck()
-
-
-
-# p=Player(name,amount,bet,[])
-
-# d=Dealer([])
-
-# g=Game(p,d)
-
-# g.play()
-
-# g.showstats()
 
